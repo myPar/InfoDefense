@@ -3,4 +3,4 @@ output.txt
 output_decript.txt
 *.ipynb
 .idea/
-
+*__pycache__*

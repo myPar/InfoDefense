@@ -1,5 +1,4 @@
-import numpy as np
-
+import sys
 # Таблица констант
 # (первые 32 бита дробных частей кубических корней первых 64 простых чисел [от 2 до 311]):
 # sha-256 спецификация: https://helix.stormhub.org/papers/SHA-256.pdf
@@ -142,14 +141,28 @@ expected_results = [0xae4b3280e56e2faf83f414a6e3dabe9d5fbe18976544c05fed121accb8
                     0xc0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a]
 
 if __name__ == "__main__":
-    # test
-    for i in range(len(test_inputs)):
-        test_input = test_inputs[i]
-        result = hash_sha_256(test_input)
+    argv = sys.argv
+    argc = len(argv)
 
-        if bytearray(expected_results[i].to_bytes(32, 'big')) != result:
-            print(f"TEST {i} FAILED:")
-            print("expected: {:02x}".format(expected_results[i]))
-            print("got: {:02x}".format(int.from_bytes(bytes(result), byteorder='big')))
-        else:
-            print(f"TEST {i} PASSED:")
+    if argc != 2:
+        print(f"invalid args count - {argc - 1}, should be 1 - test / run (test mode / normal mode)", file=sys.stderr)
+        sys.exit(1)
+    mode = argv[1]
+
+    if mode == 'test':
+        # test
+        for i in range(len(test_inputs)):
+            test_input = test_inputs[i]
+            result = hash_sha_256(test_input)
+
+            if bytearray(expected_results[i].to_bytes(32, 'big')) != result:
+                print(f"TEST {i} FAILED:")
+                print("expected: {:02x}".format(expected_results[i]))
+                print("got: {:02x}".format(int.from_bytes(bytes(result), byteorder='big')))
+            else:
+                print(f"TEST {i} PASSED:")
+    elif mode == 'run':
+        print('enter string to hash:')
+        input_string = input()
+        hash = hash_sha_256(input_string)
+        print("hash: {:02x}".format(int.from_bytes(bytes(hash), byteorder='big')))
